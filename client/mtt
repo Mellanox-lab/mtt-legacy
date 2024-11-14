@@ -120,6 +120,7 @@ use Filesys::DiskFree;
 our @file_arg;
 our $stdin_arg;
 our $scratch_arg;
+our $received_signal;
 my $help_arg;
 my $debug_arg;
 my $verbose_arg;
@@ -519,6 +520,8 @@ foreach my $hash (@ini_list) {
         next;
     }
 
+    $MTT::Globals::Values::received_signal = 0;
+
 
     # Examine the [MTT] global defaults section.  We've already
     # determined the scratch_root, so pass it in so that it gets set
@@ -528,10 +531,10 @@ foreach my $hash (@ini_list) {
     MTT::Messages::Messages($debug, $verbose, cwd(), $warning);
     MTT::Messages::SetTextwrap();
 
-    $SIG{TERM} = sub {MTT::Util::term_handler($ini, $trim, $source_dir, $install_dir, $fast_scratch_arg, $scratch_arg, $no_reporter_arg, "SIGTERM");};
-    $SIG{INT} = sub {MTT::Util::term_handler($ini, $trim, $source_dir, $install_dir, $fast_scratch_arg, $scratch_arg, $no_reporter_arg, "SIGINT");};
-    $SIG{HUP} = sub {MTT::Util::term_handler($ini, $trim, $source_dir, $install_dir, $fast_scratch_arg, $scratch_arg, $no_reporter_arg, "SIGHUP");};
-    $SIG{ABRT} = sub {MTT::Util::term_handler($ini, $trim, $source_dir, $install_dir, $fast_scratch_arg, $scratch_arg, $no_reporter_arg, "SIGABRT");};
+    $SIG{TERM} = sub { $MTT::Globals::Values::received_signal = 1; MTT::Util::term_handler($ini, $trim, $source_dir, $install_dir, $fast_scratch_arg, $scratch_arg, $no_reporter_arg, "SIGTERM");};
+    $SIG{INT} = sub { $MTT::Globals::Values::received_signal = 1; MTT::Util::term_handler($ini, $trim, $source_dir, $install_dir, $fast_scratch_arg, $scratch_arg, $no_reporter_arg, "SIGINT");};
+    $SIG{HUP} = sub { $MTT::Globals::Values::received_signal = 1; MTT::Util::term_handler($ini, $trim, $source_dir, $install_dir, $fast_scratch_arg, $scratch_arg, $no_reporter_arg, "SIGHUP");};
+    $SIG{ABRT} = sub { $MTT::Globals::Values::received_signal = 1; MTT::Util::term_handler($ini, $trim, $source_dir, $install_dir, $fast_scratch_arg, $scratch_arg, $no_reporter_arg, "SIGABRT");};
     # Make the INI file globally accessible
 
     $MTT::Globals::Internals->{ini} = $ini_full;
