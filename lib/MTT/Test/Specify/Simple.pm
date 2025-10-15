@@ -138,6 +138,11 @@ sub Specify {
                 $ok = 1;
             } elsif (-x $t) {
                 $ok = 1;
+            } elsif ($ENV{MTT_CONTAINER_MODE}) {
+                # In container mode, assume executables exist in the container
+                # even if they don't exist on the host
+                Debug("   Container mode: assuming $t exists in container\n");
+                $ok = 1;
             }
             # If it's not good, print it out, because that's
             # *probably* unexpected.  It might not be unexpected, and
