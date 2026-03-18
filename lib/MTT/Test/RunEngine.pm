@@ -301,6 +301,8 @@ sub _run_one_np {
     my $name;
     if (-e $MTT::Test::Run::test_executable) {
         $name = basename($MTT::Test::Run::test_executable);
+    } elsif ($ENV{MTT_CONTAINER_MODE}) {
+        $name = basename($MTT::Test::Run::test_executable);
     }
     $run->{name} = $name;
 
@@ -385,6 +387,8 @@ sub _run_one_test {
 
     my $basename = $MTT::Test::Run::test_executable;
     if (-e $MTT::Test::Run::test_executable) {
+        $basename = basename($MTT::Test::Run::test_executable);
+    } elsif ($ENV{MTT_CONTAINER_MODE}) {
         $basename = basename($MTT::Test::Run::test_executable);
     }
 
