@@ -3654,7 +3654,9 @@ sub cluster_name
 {
     my $clust_name;
 
-    if (slurm_job()) {
+    if ($ENV{SLURM_CLUSTER_NAME}) {
+        $clust_name = $ENV{SLURM_CLUSTER_NAME};
+    } elsif (slurm_job()) {
         $clust_name = `squeue -h -j $ENV{SLURM_JOB_ID} -o %P`;
     } else {
         $clust_name = `hostname`;
