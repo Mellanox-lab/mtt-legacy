@@ -43,24 +43,28 @@ sub Get {
 
     # If they do not, search the user's PATH for an MPI
     if (! -e $installdir) {
-        Warning("A non-existent \"installdir\" parameter was provided,\n" .
-                "I will search your path for an MPI ...\n")
-            if (defined($installdir));
+        if ($ENV{MTT_CONTAINER_MODE} && defined($installdir)) {
+            Verbose("   Container mode: assuming $installdir exists in container\n");
+        } else {
+            Warning("A non-existent \"installdir\" parameter was provided,\n" .
+                    "I will search your path for an MPI ...\n")
+                if (defined($installdir));
 
-        my $program = FindProgram(qw(mpicc mpiexec mpirun));
+            my $program = FindProgram(qw(mpicc mpiexec mpirun));
 
-        # Fail if we did not find an MPI
-        if (! -e $program) {
-            my $error = "I did not find an MPI in your PATH.\n";
-            $ret->{result_message} = "Failed; $error";
-            $ret->{test_result} = MTT::Values::FAIL;
-            return $ret;
+            # Fail if we did not find an MPI
+            if (! -e $program) {
+                my $error = "I did not find an MPI in your PATH.\n";
+                $ret->{result_message} = "Failed; $error";
+                $ret->{test_result} = MTT::Values::FAIL;
+                return $ret;
+            }
+
+            $installdir = dirname($program);
+
+            # Protect against this common user error
+            $installdir =~ s/bin\/?$//;
         }
-
-        $installdir = dirname($program);
-
-        # Protect against this common user error
-        $installdir =~ s/bin\/?$//;
     }
     Verbose("   Using MPI in: $installdir\n");
 
