@@ -101,8 +101,12 @@ sub Init
         my $agent = Value($ini, $section, "email_agent");
         if (!MTT::Mail::Init($agent))
         {
-            Debug("Failed to setup TextFileEmail reporter\n");
-            return 0;
+            # No MTA available (e.g. external clusters like Pre-Tyche).
+            # Disable email delivery but keep the HTML reporter registered so
+            # that Submit/Finalize still write the HTML reports to disk.
+            Debug("Failed to setup TextFileEmail reporter; disabling email, keeping HTML output\n");
+            $to = undef;
+            return 1;
         }
 
         Debug("TextFileEmail reporter initialized ($to)\n");
