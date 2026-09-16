@@ -184,9 +184,9 @@ sub get_codecov_result
 		open FILE, ">$codecov_dir/codecov_output.xml";
 		print FILE "<?xml version=\"1.0\"?>";
 		print FILE "<codecov_report>";
-		print FILE "<mofed_version>";
-		print FILE `ofed_info | head -n 1`;
-		print FILE "</mofed_version>";
+		print FILE "<ofed_version>";
+		print FILE MTT::Values::Functions::ofed_version();
+		print FILE "</ofed_version>";
 		print FILE "<product_name>";
 		print FILE "$ini_basename";
 		print FILE "</product_name>";
@@ -267,7 +267,7 @@ sub get_codecov_result
 			$hash_to_insert->{"codecov_report"}->{"blocks"}->{"uncvrd"} = @val[10];
 			$hash_to_insert->{"codecov_report"}->{"blocks"}->{"percent"} = (int(@val[11]))."%";		
 			$hash_to_insert->{"codecov_report"}->{"report_date"} = $report_date;			
-			$hash_to_insert->{"codecov_report"}->{"mofed_version"} = `ofed_info | head -n 1`;
+			$hash_to_insert->{"codecov_report"}->{"ofed_version"} = MTT::Values::Functions::ofed_version();
 			$hash_to_insert->{'group_id'} = $MTT::Globals::Values->{'group_id'};
 			$codecov_reports->insert($hash_to_insert);
 		}

@@ -769,7 +769,7 @@ sub _fill_cluster_info {
 			$info_form->{node_os_kernel} = `uname -s`;
 			$info_form->{node_os_release} = `uname -r -v`;
 			$info_form->{node_arch} = `uname -p`;
-			$info_form->{ofed_info} = `ofed_info -s`;
+			$info_form->{ofed_info} = MTT::Values::Functions::ofed_version();
             $info_form->{ibv_devinfo} = `ibv_devinfo -v`;
             $info_form->{ibv_devinfo_list} = `ibv_devinfo -l`;
             $info_form->{lsb_release} = `lsb_release -d`;
