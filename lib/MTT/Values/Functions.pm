@@ -3666,6 +3666,21 @@ sub cluster_name
     return $clust_name;
 }
 
+our $OFED_VERSION_CMD =
+    'ver=$(dpkg-query -W -f "\${Status} \${Version}\n" doca-ofed 2>/dev/null | sed -n "s/^install ok installed //p"); ' .
+    '[ -n "$ver" ] || ver=$(rpm -q --qf "%{VERSION}-%{RELEASE}\n" doca-ofed 2>/dev/null) || ver=""; ' .
+    '[ -n "$ver" ] || ver=$(ofed_info -n 2>/dev/null); ' .
+    'echo "${ver:-N/A}"';
+
+sub ofed_version
+{
+    my $ver = `$OFED_VERSION_CMD 2>/dev/null`;
+
+    chomp($ver);
+    $ver = 'undefined' if ($ver eq 'N/A');
+    return $ver;
+}
+
 # Round-up and find next power of two
 sub next_pwr {
     my ($x,$p) = (@_,2);  # default to next_pwr(X,2)
