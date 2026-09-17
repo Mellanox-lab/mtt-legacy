@@ -18,6 +18,7 @@ use strict;
 use POSIX qw(strftime);
 use MTT::Messages;
 use MTT::Values;
+use MTT::Values::Functions;
 use MTT::Files;
 use MTT::Version;
 use MTT::Mail;
@@ -815,7 +816,7 @@ sub get_html_summary_report_template
     my $css = get_css_template();
 	my $values_replace = {};
 	$values_replace->{'REPORT_DATE'} =  `date +%F` ." ". `date +%k:%M:%S`;
-	$values_replace->{'OFED_VERSION'} = `ofed_info -s`;
+	$values_replace->{'OFED_VERSION'} = MTT::Values::Functions::ofed_version();
 	$values_replace->{'CLUSTER_NAME'} = MTT::Values::Functions::cluster_name();
 	
 	my $helpper_hash = {};

@@ -3666,6 +3666,18 @@ sub cluster_name
     return $clust_name;
 }
 
+sub ofed_version
+{
+    chomp(my $ver = `dpkg-query -W -f '\${Version}\\n' doca-ofed 2>/dev/null`);
+    unless ($ver) {
+        chomp($ver = `rpm -q --qf '%{VERSION}-%{RELEASE}\\n' doca-ofed 2>/dev/null`);
+        $ver = '' if $?;
+    }
+    $ver ||= `ofed_info -n 2>/dev/null`;
+    chomp($ver);
+    return $ver;
+}
+
 # Round-up and find next power of two
 sub next_pwr {
     my ($x,$p) = (@_,2);  # default to next_pwr(X,2)
