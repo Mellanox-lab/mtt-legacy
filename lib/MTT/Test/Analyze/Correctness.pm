@@ -22,6 +22,8 @@ sub Analyze {
 
     my ($run, $mpi_details, $msg, $results) = @_;
 
+    undef $MTT::Test::Run::analyzer_result;
+
     # Only evaluatate $pass if we didn't timeout or skip
     my $skipped = MTT::Values::EvaluateString($run->{skipped});
     my $pass = 0;
@@ -48,6 +50,8 @@ sub Analyze {
         $result = MTT::Values::SKIPPED;
     } elsif ($results->{timed_out}) {
         $result = MTT::Values::TIMED_OUT;
+    } elsif ($pass && defined($MTT::Test::Run::analyzer_result)) {
+        $result = $MTT::Test::Run::analyzer_result;
     } elsif ($pass) {
         $result = MTT::Values::PASS;
     }
@@ -82,9 +86,11 @@ sub Analyze {
     my $str;
     $str = $msg;
     if ($pass) {
-        Verbose("$str Passed\n");
-        $report->{result_message} = "Passed";
-        $want_output = $run->{save_stdout_on_pass};
+        my $warned = ($result == MTT::Values::WARNING);
+        my $outcome = $warned ? "Passed with warnings" : "Passed";
+        Verbose("$str $outcome\n");
+        $report->{result_message} = $outcome;
+        $want_output = $warned ? 1 : $run->{save_stdout_on_pass};
     } elsif ($skipped) {
         Verbose("$str Skipped\n");
         $report->{result_message} = "Skipped";
