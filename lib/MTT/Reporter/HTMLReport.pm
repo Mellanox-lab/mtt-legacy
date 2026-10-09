@@ -200,6 +200,11 @@ sub _summary_report
                         $per_mpiver->{$mpi_version}{pass}++;
                         $total_succ++;
                     }
+                    elsif ($results_hash->{test_result} eq MTT::Values::WARNING)
+                    {
+                        $per_mpiver->{$mpi_version}{warning}++;
+                        $total_succ++;
+                    }
                     elsif ($results_hash->{test_result} eq MTT::Values::FAIL)
                     {
                         $per_mpiver->{$mpi_version}{fail}++;
@@ -230,7 +235,7 @@ sub _summary_report
                     $rep_file           =~ s/\.txt/\.html/g;
 
                     my $duration_human  = _convert_duration($mpi_stat->{duration});
-                    $html_table_content .= add_tr($phase, $section, $mpi_version, $duration_human, $mpi_stat->{pass}, $mpi_stat->{fail},
+                    $html_table_content .= add_tr($phase, $section, $mpi_version, $duration_human, $mpi_stat->{pass}, $mpi_stat->{warning}, $mpi_stat->{fail},
                         $mpi_stat->{timed}, $mpi_stat->{skipped}, $rep_file, $dirname);
                 }
             }
@@ -694,14 +699,18 @@ sub _convert_duration
 
 sub add_tr
 {
-    my ($phase, $section, $mpi_version, $duration_human, $pass, $fail, $timed, $skipped, $rep_file_url, $dir) = @_;
+    my ($phase, $section, $mpi_version, $duration_human, $pass, $warning, $fail, $timed, $skipped, $rep_file_url, $dir) = @_;
     my $trClass;
     if ($fail or $timed) {
         $trClass = 'font-weight:bold; color:red;';
     }
 
+    my $warn_cell = $warning
+        ? "<span style=\"font-weight:bold; color:\#cc9900;\">$warning</span>"
+        : $warning;
+
     my $tr = "<tr style=\"background:\#eeeee0; $trClass\"  valign='top'>\n";
-    $tr .= "<td ><a href='$domain/$dir/$rep_file_url'>$phase</a></td><td>$section</td><td>$mpi_version</td><td >$duration_human</td><td>$pass</td><td>$fail</td><td>$timed</td><td>$skipped</td>\n</tr>\n";
+    $tr .= "<td ><a href='$domain/$dir/$rep_file_url'>$phase</a></td><td>$section</td><td>$mpi_version</td><td >$duration_human</td><td>$pass</td><td>$warn_cell</td><td>$fail</td><td>$timed</td><td>$skipped</td>\n</tr>\n";
 
     return $tr;
 }
@@ -818,7 +827,7 @@ sub get_html_summary_report_template
     <h2>Summary</h2>
     <table border="0" cellpadding="5" cellspacing="2" width="95%">
     <tr style="font-weight: bold; text-align:left; background:#a6caf0;"  valign="top">
-    <th>Phase</th><th>Section</th><th>MPI Version</th><th>Duration</th><th>Pass</th><th>Fail</th><th>Time Out</th><th>Skip</th>
+    <th>Phase</th><th>Section</th><th>MPI Version</th><th>Duration</th><th>Pass</th><th>Warning</th><th>Fail</th><th>Time Out</th><th>Skip</th>
     </tr>
     %TESTS_RESULTS%
     </table>
